@@ -2,13 +2,11 @@ package ru.timuruktus.oridea.View.Fragments;
 
 
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +18,16 @@ import android.widget.Toast;
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import ru.timuruktus.oridea.Events.Global.ShowErrorEvent;
+import ru.timuruktus.oridea.Events.Global.ShowLoadingBarEvent;
+import ru.timuruktus.oridea.Events.ToAuthPresenter.AuthSucceedEvent;
+import ru.timuruktus.oridea.Events.ToAuthPresenter.OnLoginButtonClickEvent;
+import ru.timuruktus.oridea.Events.ToAuthPresenter.OnRegButtonClickEvent;
+import ru.timuruktus.oridea.Events.ToMainActivity.ChangeToolbarTitleEvent;
 import ru.timuruktus.oridea.R;
-import ru.timuruktus.oridea.View.Activities.MainActivity;
 
 public class AuthFragment extends Fragment implements View.OnClickListener{
 
@@ -46,8 +52,8 @@ public class AuthFragment extends Fragment implements View.OnClickListener{
         rootView =
                 inflater.inflate(R.layout.auth_fragment, container, false);
 
-        IMainActivity iMainActivity = (MainActivity) getActivity();
-        iMainActivity.changeToolbarTitle(R.string.title_activity_auth);
+        EventBus.getDefault().register(this);
+        EventBus.getDefault().post(new ChangeToolbarTitleEvent(R.string.title_activity_auth));
 
         String custom_font = "fonts/Roboto-Italic.ttf";
         Typeface CF = Typeface.createFromAsset(getActivity().getAssets(), custom_font);
@@ -99,48 +105,22 @@ public class AuthFragment extends Fragment implements View.OnClickListener{
         sliderShow.setPresetTransformer("Stack"); //stack, tablet- good
     }
 
-
-    /**
-     * Changes a fragment
-     * @param isItWasLogin - depends on what text will be shown in Toast
-     *                     if "true" - you were signIn with login
-     *                     if "false" - you were created your account
-     */
-    @Override
-    public void showChangeFragment(boolean isItWasLogin) {
-        showLoadingBar(false);
-        if(isItWasLogin) {
-            Log.d("tag", "changeFragment(itWasLogin == true)");
-            Toast.makeText(getActivity().getApplicationContext(), R.string.auth_success_login,
-                    Toast.LENGTH_SHORT).show();
-        }else{
-            Log.d("tag", "changeFragment(itWasLogin == false)");
-            Toast.makeText(getActivity().getApplicationContext(), R.string.auth_success_singin,
-                    Toast.LENGTH_SHORT).show();
-        }
-        FragmentManager fragmentManager = getFragmentManager();
-        authPresenter.onChangeFragment(fragmentManager);
-
-    }
-
     /**
      * Shows an error Toast message and make loading bar invisible
-     *
      */
-    @Override
-    public void showRegError() {
+    @Subscribe
+    public void showRegError(ShowErrorEvent event) {
         Context context = getActivity().getApplicationContext();
         Toast.makeText(context, R.string.auth_failed, Toast.LENGTH_SHORT).show();
-        showLoadingBar(false);
+        EventBus.getDefault().post(new ShowLoadingBarEvent(false));
     }
 
     /**
      * Shows start/end of loading
-     * @param show - "true" if loading was started (NEEDED TO SHOW LOADING BAR)
      */
-    @Override
-    public void showLoadingBar(boolean show) {
-        if(show) {
+    @Subscribe
+    public void showLoadingBar(ShowLoadingBarEvent event) {
+        if(event.show) {
             emailInput.setVisibility(View.INVISIBLE);
             passInput.setVisibility(View.INVISIBLE);
             regBut.setVisibility(View.INVISIBLE);
@@ -163,10 +143,12 @@ public class AuthFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         int id = v.getId();
         if(id == R.id.regBut){
-            authPresenter.onRegButClick(editTextEmail.getText().toString(), editTextPass.getText().toString());
+            EventBus.getDefault().post(new OnRegButtonClickEvent(editTextEmail.getText().toString(),
+                    editTextPass.getText().toString()));
         }
         else if(id == R.id.logBut){
-            authPresenter.onLoginButClick(editTextEmail.getText().toString(), editTextPass.getText().toString());
+            EventBus.getDefault().post(new OnLoginButtonClickEvent(editTextEmail.getText().toString(),
+                    editTextPass.getText().toString()));
         }
     }
 
@@ -176,7 +158,19 @@ public class AuthFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onStop(){
         sliderShow.stopAutoCycle();
+        EventBus.getDefault().register(this);
         super.onStop();
+    }
+
+    @Subscribe
+    public void onAuthSuccess(AuthSucceedEvent event){
+        if(event.itWasLogin){
+            Toast.makeText(getActivity().getApplicationContext(), R.string.auth_success_login,
+                    Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(getActivity().getApplicationContext(), R.string.auth_success_singin,
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

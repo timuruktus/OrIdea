@@ -40,6 +40,7 @@
     // [FOR TOP BAR]
     <string name="title_activity_auth">Аутентификация</string>
     <string name="title_activity_main">Главное меню</string>
+    <string name="title_activity_push_post">Редактирование</string>
 
     // [FOR PUSH_POST_LAYOUT]
     <string name="push_title">Заголовок:</string>

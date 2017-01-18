@@ -14,8 +14,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import ru.timuruktus.newsletters.Model.JSONFragments.Post;
-import ru.timuruktus.newsletters.R;
+import ru.timuruktus.oridea.Model.JSONFragments.Post;
+import ru.timuruktus.oridea.R;
 
 public class UserPostsAdapter extends BaseAdapter {
     Context ctx;

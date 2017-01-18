@@ -23,13 +23,21 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.io.IOException;
-import java.util.ArrayList;
 
 
+import ru.timuruktus.oridea.Events.Global.ReturnCategoriesEvent;
+import ru.timuruktus.oridea.Events.Global.ShowLoadingBarEvent;
+import ru.timuruktus.oridea.Events.Global.ShowErrorEvent;
+import ru.timuruktus.oridea.Events.ToMainActivity.ChangeToolbarTitleEvent;
+import ru.timuruktus.oridea.Events.ToPushPostPresenter.OnChooseCategoryEvent;
+import ru.timuruktus.oridea.Events.ToPushPostPresenter.OnPushButtonClickEvent;
 import ru.timuruktus.oridea.R;
 
-public class PushPostFragment extends Fragment implements View.OnClickListener, IPushPostFragment{
+public class PushPostFragment extends Fragment implements View.OnClickListener{
     private static final int REQUEST = 1;
     private View rootView;
     ImageView textImage, vkLike;
@@ -39,8 +47,6 @@ public class PushPostFragment extends Fragment implements View.OnClickListener, 
     ProgressBar pushLoadingBar;
     private String urlToImage;
     private Bitmap localImg;
-    private ArrayList<String> categories;
-    PushPostPresenter pushPostPresenter;
     private String category;
     private CharSequence[] categoriesCharSequence;
     public static final String TAG = "tag";
@@ -61,7 +67,8 @@ public class PushPostFragment extends Fragment implements View.OnClickListener, 
         rootView =
                 inflater.inflate(R.layout.push_post_fragment, container, false);
 
-        pushPostPresenter = new PushPostPresenter(this);
+        EventBus.getDefault().register(this);
+        EventBus.getDefault().post(new ChangeToolbarTitleEvent(R.string.title_activity_push_post));
 
         textImage = (ImageView) rootView.findViewById(R.id.textImage);
         textView = (TextView) rootView.findViewById(R.id.textView);
@@ -86,7 +93,6 @@ public class PushPostFragment extends Fragment implements View.OnClickListener, 
     public void onClick(View v) {
         int id = v.getId();
         if(id == R.id.chooseImage){
-            // TODO: HEre is an error! Image cannot be read from local repository! Access denied!
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage(R.string.push_dialog_message)
                     .setTitle(R.string.push_dialog_title);
@@ -106,17 +112,21 @@ public class PushPostFragment extends Fragment implements View.OnClickListener, 
             builder.show();
         }else if(id == R.id.chooseCategory){
             category = null;
-            pushPostPresenter.getCategories();
+            EventBus.getDefault().post(new OnChooseCategoryEvent());
 
         }else if(id == R.id.push){
             if(validate()) {
                 if(urlToImage == null) {
-                    pushPostPresenter.onPushButtonClick(localImg, editText.getText().toString(),
-                            editTitle.getText().toString(), categoryView.getText().toString());
+                    EventBus.getDefault().post(new OnPushButtonClickEvent(localImg,
+                            editText.getText().toString(),
+                            editTitle.getText().toString(),
+                            categoryView.getText().toString()));
                 }
                 else if(localImg == null){
-                    pushPostPresenter.onPushButtonClick(urlToImage, editText.getText().toString(),
-                            editTitle.getText().toString(),categoryView.getText().toString());
+                    EventBus.getDefault().post(new OnPushButtonClickEvent(urlToImage,
+                            editText.getText().toString(),
+                            editTitle.getText().toString(),
+                            categoryView.getText().toString()));
                 }
             }else{
                 Toast.makeText(rootView.getContext(),R.string.push_error, Toast.LENGTH_SHORT).show();
@@ -160,7 +170,6 @@ public class PushPostFragment extends Fragment implements View.OnClickListener, 
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         EditText et = (EditText) view.findViewById(R.id.push_url_link);
-                        //TODO: ERROR ON BUTTON CLICK!
                         urlToImage = et.getText().toString();
                         Picasso.with(rootView.getContext()).load(urlToImage).into(textImage);
                     }
@@ -172,7 +181,6 @@ public class PushPostFragment extends Fragment implements View.OnClickListener, 
     public void chooseIMGFromLocal(){
         Intent i = new Intent(Intent.ACTION_PICK);
         i.setType("image/*");
-
         startActivityForResult(i, REQUEST);
     }
 
@@ -194,9 +202,10 @@ public class PushPostFragment extends Fragment implements View.OnClickListener, 
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    @Override
-    public void turnOnLoading(boolean turn) {
-        if(turn) {
+
+    @Subscribe
+    public void turnOnLoading(ShowLoadingBarEvent event) {
+        if(event.show) {
             pushLoadingBar.setVisibility(View.VISIBLE);
             textImage.setVisibility(View.INVISIBLE);
             textView.setVisibility(View.INVISIBLE);
@@ -221,20 +230,16 @@ public class PushPostFragment extends Fragment implements View.OnClickListener, 
         }
     }
 
-    @Override
-    public void showError() {
-        turnOnLoading(false);
+    @Subscribe
+    public void showError(ShowErrorEvent event) {
+        EventBus.getDefault().post(new ShowLoadingBarEvent(false));
         Toast.makeText(rootView.getContext(), R.string.push_error, Toast.LENGTH_LONG).show();
     }
 
-    public void setCategoryArray(ArrayList<String> categories){
-        this.categories = categories;
-        showCategoryDialog();
-    }
-
-    public void showCategoryDialog(){
+    @Subscribe
+    public void showCategoryDialog(ReturnCategoriesEvent event){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        categoriesCharSequence = categories.toArray(new CharSequence[categories.size()]);
+        categoriesCharSequence = event.categories.toArray(new CharSequence[event.categories.size()]);
         builder.setTitle(R.string.push_choose_category)
                 .setItems(categoriesCharSequence, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -246,5 +251,10 @@ public class PushPostFragment extends Fragment implements View.OnClickListener, 
         builder.show();
     }
 
+    @Override
+    public void onStop(){
+        EventBus.getDefault().register(this);
+        super.onStop();
+    }
 
 }

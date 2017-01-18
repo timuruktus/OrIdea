@@ -1,10 +1,10 @@
 package ru.timuruktus.oridea.View.Activities;
 
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -21,7 +21,21 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import ru.timuruktus.oridea.Events.ToAuthPresenter.AuthSucceedEvent;
+import ru.timuruktus.oridea.Events.ToMainActivity.ChangeFragmentEvent;
+import ru.timuruktus.oridea.Events.ToMainActivity.HideLogoutEvent;
+import ru.timuruktus.oridea.Events.ToMainActivityPresenter.LeftMenuClickEvent;
+import ru.timuruktus.oridea.Model.EmailAuth;
+import ru.timuruktus.oridea.Presenter.AuthPresenter;
+import ru.timuruktus.oridea.Presenter.MainActivityPresenter;
+import ru.timuruktus.oridea.Presenter.NetworkChangeReceiver;
+import ru.timuruktus.oridea.Presenter.PushPostPresenter;
+import ru.timuruktus.oridea.Presenter.WelcomePresenter;
 import ru.timuruktus.oridea.R;
+import ru.timuruktus.oridea.View.Fragments.WelcomeFragment;
 
 /**
  * CREATED IN 05 JANUARY 2017
@@ -29,7 +43,7 @@ import ru.timuruktus.oridea.R;
  * BY KHASANOV TIMUR (16)
  */
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener{
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     public final static String TAG = "tag";
     private DrawerLayout drawer;
@@ -46,6 +60,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        EventBus.getDefault().register(this);
 
 
         FragmentManager fragmentManager = getFragmentManager();
@@ -66,6 +81,8 @@ public class MainActivity extends AppCompatActivity
                 toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+        initAllListeners();
+        initBroadcastReceiver();
 
     }
 
@@ -104,7 +121,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         FragmentManager fragmentManager = getFragmentManager();
-        mainActivityPresenter.onLeftMenuButClick(item, fragmentManager, drawer);
+        EventBus.getDefault().post(new LeftMenuClickEvent(item, fragmentManager, drawer,
+                getCurrentFragment()));
 
         return true;
     }
@@ -115,19 +133,63 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    @Subscribe
+    public void changeToolbarTitle(int resId) {
+        toolbar.setTitle(resId);
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+
+    public void initAllListeners(){
+        AuthPresenter authPresenter = new AuthPresenter();
+        MainActivityPresenter mainActivityPresenter = new MainActivityPresenter();
+        PushPostPresenter pushPostPresenter = new PushPostPresenter();
+        WelcomePresenter welcomePresenter = new WelcomePresenter();
+        EmailAuth emailAuth = new EmailAuth();
+    }
+
+    private void initBroadcastReceiver() {
+        NetworkChangeReceiver receiver = new NetworkChangeReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        registerReceiver(receiver,filter);
+    }
+
     public Fragment getCurrentFragment() {
         Fragment frag = getFragmentManager().findFragmentById(R.id.fragmentContainer);
         return frag;
     }
 
-
-    public void changeToolbarTitle(int resId) {
-        toolbar.setTitle(resId);
+    @Subscribe
+    public void hideLogout(HideLogoutEvent hideLogoutEvent){
+        if(hideLogoutEvent.hide){
+            MainActivity.navigationView.getMenu().findItem(R.id.logout_menu).setVisible(false);
+            MainActivity.navigationView.getMenu().findItem(R.id.registration_menu).setVisible(true);
+        }
+        else{
+            MainActivity.navigationView.getMenu().findItem(R.id.logout_menu).setVisible(true);
+            MainActivity.navigationView.getMenu().findItem(R.id.registration_menu).setVisible(false);
+        }
     }
 
-    public Activity getActivity() {
-        return this;
+    @Subscribe
+    public void changeFragment(ChangeFragmentEvent event){
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainer, event.fragment);
+        fragmentTransaction.commit();
     }
-
 
 }

@@ -11,11 +11,15 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 
+import ru.timuruktus.oridea.Events.ToMainActivity.ChangeToolbarTitleEvent;
 import ru.timuruktus.oridea.Model.JSONFragments.Post;
 import ru.timuruktus.oridea.R;
 import ru.timuruktus.oridea.View.Activities.MainActivity;
+import ru.timuruktus.oridea.View.Other.Adapters.UserPostsAdapter;
 
 
 public class WelcomeFragment extends Fragment {
@@ -35,9 +39,11 @@ public class WelcomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        WelcomePresenter wp = new WelcomePresenter(this);
-        IMainActivity iMainActivity = (MainActivity) getActivity();
-        iMainActivity.changeToolbarTitle(R.string.title_activity_main);
+
+        EventBus.getDefault().register(this);
+        EventBus.getDefault().post(new ChangeToolbarTitleEvent(R.string.title_activity_main));
+
+        EventBus.getDefault().post(new ChangeToolbarTitleEvent(R.string.title_activity_main));
         View rootView =
                 inflater.inflate(R.layout.welcome_fragment, container, false);
 
@@ -66,6 +72,12 @@ public class WelcomeFragment extends Fragment {
             }
         });
         return rootView;
+    }
+
+    @Override
+    public void onStop(){
+        EventBus.getDefault().register(this);
+        super.onStop();
     }
 
 

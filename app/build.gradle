@@ -5,7 +5,7 @@ android {
     buildToolsVersion "24.0.2"
 
     defaultConfig {
-        applicationId "ru.timuruktus.newsletters"
+        applicationId "ru.timuruktus.oridea"
         minSdkVersion 21
         targetSdkVersion 24
         versionCode 1
@@ -19,6 +19,7 @@ android {
         }
     }
 }
+
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
@@ -35,6 +36,5 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.daimajia.slider:library:1.1.5@aar'
-    compile files('libs/android-query-full.0.26.8.jar')
 }
 apply plugin: 'com.google.gms.google-services'
