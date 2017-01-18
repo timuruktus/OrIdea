@@ -1,0 +1,51 @@
+{
+  "project_info": {
+    "project_number": "58528653607",
+    "firebase_url": "https://oridea-60e65.firebaseio.com",
+    "project_id": "oridea-60e65",
+    "storage_bucket": "oridea-60e65.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:58528653607:android:5c34f2d29101994b",
+        "android_client_info": {
+          "package_name": "ru.timuruktus.oridea"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "58528653607-jsn8utcleesd85gk9gij1tdljupcpu7a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ru.timuruktus.oridea",
+            "certificate_hash": "E1539C1A40259EEFB5828281D7AD44308F1C073F"
+          }
+        },
+        {
+          "client_id": "58528653607-9t72hec3is4tmjvagssblclj3li8k9e2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "58528653607-9t72hec3is4tmjvagssblclj3li8k9e2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

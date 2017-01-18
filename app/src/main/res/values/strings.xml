@@ -1,0 +1,65 @@
+<resources>
+    // [APP NAME] : IF CHANGE, CHANGE title_activity_main too!
+    <string name="app_name">OrIdea</string>
+
+
+    // [ACTIONS FOR TOOLBAR] : DON'T CHANGE!
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    // [ADAPTABLE]
+    <string name="logout">Выйти</string>
+    <string name="login">Войти</string>
+    <string name="registration_menu">Зарегистрироваться/Войти</string>
+    <string name="registration">Зарегистрироваться</string>
+    <string name="OK">OK</string>
+
+    // [TOP MENU ITEMS]
+    <string name="action_settings">Настройки</string>
+
+
+    // [LEFT MENU ITEMS]
+    <string name="news">Идеи</string>
+    <string name="post">Создать пост..</string>
+
+
+    // [HINTS FOR EDIT TEXT]
+    <string name="hint_pass">Пароль</string>
+    <string name="hint_email">Почта</string>
+
+    // [BUTTON TEXT]
+    <string name="image_choose">Выбрать Картинку..</string>
+
+
+    // [TOAST TEXT]
+    <string name="auth_failed">Неверная почта, или пароль</string>
+    <string name="auth_success_login">Вы успешно вошли!</string>
+    <string name="auth_success_singin">Вы успешно зарегистрировались! Пожалуйста, подтвердите ваш аккаунт на почте!</string>
+    <string name="disabled_network">Пожалуйста, проверьте ваше интернет соединение. Дополнительные функции приложения заблокированы.</string>
+
+    // [FOR TOP BAR]
+    <string name="title_activity_auth">Аутентификация</string>
+    <string name="title_activity_main">Главное меню</string>
+
+    // [FOR PUSH_POST_LAYOUT]
+    <string name="push_title">Заголовок:</string>
+    <string name="pust_text">Введите ваш текст ниже:</string>
+    <string name="push">Отправить!</string>
+    <string name="push_image_choose_fail">Вы не выбрали изображение!</string>
+    <string name="push_appeal">Пожаловаться</string>
+
+    // [FOR PUSH_POST_LAYOUT DIALOG]
+    <string name="push_dialog_message">Выберите как загружать картинку: </string>
+    <string name="push_dialog_title">Выберите.. </string>
+    <string name="push_link_text">URL Ссылкой</string>
+    <string name="push_upload_text">Зарузить..</string>
+    <string name="push_write_url">Вставьте ссылку на изображение</string>
+    <string name="push_choose_category">Выберите категорию</string>
+    <string name="push_error">Ошибка!</string>
+    <string name="push_didnt_choose_image">Вы не выбрали изображение!</string>
+    
+
+
+
+
+</resources>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="147dp"
+        android:text="New Text"
+        android:id="@+id/text"
+        android:layout_gravity="left|bottom"
+        android:background="#f33d3d"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="364dp"
+            android:id="@+id/postImage"
+            android:layout_gravity="left|top"
+            android:background="#bcbcbc" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Large Text"
+            android:id="@+id/title"
+            android:layout_gravity="left"
+            android:textSize="30dp" />
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:id="@+id/authorImage"
+            android:layout_gravity="left|top"
+            android:background="#868484"
+            android:layout_alignLeft="@+id/postImage"
+            android:layout_alignBottom="@+id/postImage" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="New Text"
+            android:id="@+id/name"
+            android:layout_gravity="top"
+            android:layout_above="@+id/authorImage" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/like"
+            android:layout_gravity="right|top"
+            android:enabled="true"
+            android:layout_alignParentStart="false"
+            android:layout_toLeftOf="@+id/vkLike"
+            android:layout_alignBottom="@+id/postImage"
+            android:foreground="@drawable/ic_like_button"
+            android:foregroundGravity="center" />
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/vkLike"
+            android:layout_gravity="right|center_vertical"
+            android:src="@drawable/vk_share_button"
+            android:cropToPadding="false"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentStart="false"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentLeft="false"
+            android:layout_alignRight="@+id/postImage"
+            android:layout_alignBottom="@+id/postImage" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/push_appeal"
+            android:id="@+id/button"
+            android:layout_toLeftOf="@+id/like"
+            android:layout_alignTop="@+id/like" />
+
+    </RelativeLayout>
+
+</FrameLayout>
