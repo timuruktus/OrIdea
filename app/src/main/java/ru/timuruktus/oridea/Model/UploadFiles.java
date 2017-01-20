@@ -17,16 +17,22 @@ import java.io.ByteArrayOutputStream;
 
 import ru.timuruktus.oridea.Events.Global.ShowLoadingBarEvent;
 import ru.timuruktus.oridea.Events.Global.ShowErrorEvent;
-import ru.timuruktus.oridea.Events.ToPushPostPresenter.OnPostImageLoadedEvent;
+import ru.timuruktus.oridea.Events.EventCallbacks.OnPostImageLoadedCallback;
 import ru.timuruktus.oridea.Events.ToUploadFiles.UploadPostImageEvent;
 
 
 public class UploadFiles {
 
+
+
     static Uri downloadUrl;
 
+    public UploadFiles() {
+        EventBus.getDefault().register(this);
+    }
+
     @Subscribe
-    public static void uploadPostImage(UploadPostImageEvent event){
+    public void uploadPostImage(UploadPostImageEvent event){
         EventBus.getDefault().post(new ShowLoadingBarEvent(true));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         event.localImg.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -46,7 +52,7 @@ public class UploadFiles {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 downloadUrl = taskSnapshot.getDownloadUrl();
-                EventBus.getDefault().post(new OnPostImageLoadedEvent(downloadUrl.toString()));
+                EventBus.getDefault().post(new OnPostImageLoadedCallback(downloadUrl.toString()));
             }
         });
 

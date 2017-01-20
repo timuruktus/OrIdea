@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:id="@+id/fragmentContainer"
         tools:layout="@layout/welcome_fragment"
-        android:name="ru.timuruktus.newsletters.View.Fragments.EmptyFragment"
+        android:name="ru.timuruktus.oridea.View.Fragments.EmptyFragment"
         android:layout_marginTop="?android:actionBarSize" />
 
     <include

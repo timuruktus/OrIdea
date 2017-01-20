@@ -13,6 +13,7 @@ import ru.timuruktus.oridea.Events.ToAuthPresenter.OnRegButtonClickEvent;
 import ru.timuruktus.oridea.Events.ToEmailAuth.StartLogEvent;
 import ru.timuruktus.oridea.Events.ToEmailAuth.StartRegEvent;
 import ru.timuruktus.oridea.Events.ToMainActivity.ChangeFragmentEvent;
+import ru.timuruktus.oridea.Events.ToMainActivity.HideLogoutEvent;
 import ru.timuruktus.oridea.View.Fragments.WelcomeFragment;
 
 public class AuthPresenter {
@@ -40,6 +41,7 @@ public class AuthPresenter {
 
     @Subscribe
     public void onAuthSuccess(AuthSucceedEvent event){
-        EventBus.getDefault().post(new ChangeFragmentEvent(new WelcomeFragment()));
+        EventBus.getDefault().post(new ChangeFragmentEvent(new WelcomeFragment(), false));
+        EventBus.getDefault().post(new HideLogoutEvent(false));
     }
 }

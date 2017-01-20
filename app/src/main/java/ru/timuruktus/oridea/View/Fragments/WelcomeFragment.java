@@ -40,9 +40,6 @@ public class WelcomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        EventBus.getDefault().register(this);
-        EventBus.getDefault().post(new ChangeToolbarTitleEvent(R.string.title_activity_main));
-
         EventBus.getDefault().post(new ChangeToolbarTitleEvent(R.string.title_activity_main));
         View rootView =
                 inflater.inflate(R.layout.welcome_fragment, container, false);
@@ -76,8 +73,15 @@ public class WelcomeFragment extends Fragment {
 
     @Override
     public void onStop(){
-        EventBus.getDefault().register(this);
+        EventBus.getDefault().unregister(this);
         super.onStop();
+    }
+
+    @Override
+    public void onStart() {
+        //EventBus.getDefault().register(this);
+        super.onStart();
+
     }
 
 

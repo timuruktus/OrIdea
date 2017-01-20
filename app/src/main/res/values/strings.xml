@@ -53,11 +53,12 @@
     <string name="push_dialog_message">Выберите как загружать картинку: </string>
     <string name="push_dialog_title">Выберите.. </string>
     <string name="push_link_text">URL Ссылкой</string>
-    <string name="push_upload_text">Зарузить..</string>
+    <string name="push_upload_text">Загрузить..</string>
     <string name="push_write_url">Вставьте ссылку на изображение</string>
     <string name="push_choose_category">Выберите категорию</string>
     <string name="push_error">Ошибка!</string>
     <string name="push_didnt_choose_image">Вы не выбрали изображение!</string>
+    <string name="push_didnt_verify_email">Подтвердите вашу почту!</string>
     
 
 

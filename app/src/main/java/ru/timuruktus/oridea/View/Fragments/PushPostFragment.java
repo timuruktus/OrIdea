@@ -29,7 +29,7 @@ import org.greenrobot.eventbus.Subscribe;
 import java.io.IOException;
 
 
-import ru.timuruktus.oridea.Events.Global.ReturnCategoriesEvent;
+import ru.timuruktus.oridea.Events.EventCallbacks.ReturnCategoriesEvent;
 import ru.timuruktus.oridea.Events.Global.ShowLoadingBarEvent;
 import ru.timuruktus.oridea.Events.Global.ShowErrorEvent;
 import ru.timuruktus.oridea.Events.ToMainActivity.ChangeToolbarTitleEvent;
@@ -67,7 +67,6 @@ public class PushPostFragment extends Fragment implements View.OnClickListener{
         rootView =
                 inflater.inflate(R.layout.push_post_fragment, container, false);
 
-        EventBus.getDefault().register(this);
         EventBus.getDefault().post(new ChangeToolbarTitleEvent(R.string.title_activity_push_post));
 
         textImage = (ImageView) rootView.findViewById(R.id.textImage);
@@ -113,7 +112,6 @@ public class PushPostFragment extends Fragment implements View.OnClickListener{
         }else if(id == R.id.chooseCategory){
             category = null;
             EventBus.getDefault().post(new OnChooseCategoryEvent());
-
         }else if(id == R.id.push){
             if(validate()) {
                 if(urlToImage == null) {
@@ -233,6 +231,10 @@ public class PushPostFragment extends Fragment implements View.OnClickListener{
     @Subscribe
     public void showError(ShowErrorEvent event) {
         EventBus.getDefault().post(new ShowLoadingBarEvent(false));
+        if(event.action == ShowErrorEvent.Action.DIDNT_VERIFY_EMAIL){
+            Toast.makeText(rootView.getContext(), R.string.push_didnt_verify_email, Toast.LENGTH_LONG).show();
+            return;
+        }
         Toast.makeText(rootView.getContext(), R.string.push_error, Toast.LENGTH_LONG).show();
     }
 
@@ -253,8 +255,17 @@ public class PushPostFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onStop(){
-        EventBus.getDefault().register(this);
+        EventBus.getDefault().unregister(this);
         super.onStop();
     }
+
+    @Override
+    public void onStart() {
+        EventBus.getDefault().register(this);
+        super.onStart();
+
+    }
+
+
 
 }

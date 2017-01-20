@@ -8,7 +8,15 @@ public class UserAccount {
     String username;
     int rating = 0;
 
+
+
+    String email;
+
     public UserAccount(){
+    }
+
+    public UserAccount(String email){
+        this.email = email;
     }
 
     public String getUsername() {
@@ -25,5 +33,13 @@ public class UserAccount {
 
     public void setRating(int rating) {
         this.rating = rating;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

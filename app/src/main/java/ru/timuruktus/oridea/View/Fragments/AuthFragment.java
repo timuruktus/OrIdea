@@ -158,9 +158,10 @@ public class AuthFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onStop(){
         sliderShow.stopAutoCycle();
-        EventBus.getDefault().register(this);
+        EventBus.getDefault().unregister(this);
         super.onStop();
     }
+
 
     @Subscribe
     public void onAuthSuccess(AuthSucceedEvent event){

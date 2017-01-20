@@ -56,7 +56,7 @@
 
         <EditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:id="@+id/editTitle"
             android:layout_marginTop="10dp"
             android:textAlignment="center" />

@@ -4,7 +4,6 @@ package ru.timuruktus.oridea.Model;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -16,6 +15,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import ru.timuruktus.oridea.Events.Global.CheckUserAuth;
+import ru.timuruktus.oridea.Events.EventCallbacks.CheckUserAuthCallback;
 import ru.timuruktus.oridea.Events.ToAuthPresenter.AuthFailedEvent;
 import ru.timuruktus.oridea.Events.ToAuthPresenter.AuthSucceedEvent;
 import ru.timuruktus.oridea.Events.ToEmailAuth.StartLogEvent;
@@ -127,8 +128,16 @@ public class EmailAuth {
 
     private void writeNewUser(String email) {
         Log.d(TAG, "Email in writeNewUser(): " + email);
-        UserAccount user = new UserAccount();
+        UserAccount user = new UserAccount(email);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(user);
+    }
+
+    @Subscribe
+    public void checkUserAuth(CheckUserAuth event){
+        boolean auth;
+        auth = FirebaseAuth.getInstance().getCurrentUser() != null;
+        EventBus.getDefault().post(new CheckUserAuthCallback(auth));
+        Log.d("tag", "CheckUserAuthCallback was sended.");
     }
 }

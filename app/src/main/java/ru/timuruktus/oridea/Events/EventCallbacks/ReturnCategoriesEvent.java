@@ -1,4 +1,4 @@
-package ru.timuruktus.oridea.Events.Global;
+package ru.timuruktus.oridea.Events.EventCallbacks;
 
 
 import java.util.ArrayList;

@@ -1,23 +1,23 @@
 package ru.timuruktus.oridea.Model.JSONFragments;
 
 
-
 public class Post {
 
     private String text;
-    private String newsImageUrl;
+    private String postImageUrl;
     private String authorImageUrl;
     private String category;
     private String title;
     private String author; //Author- authId
 
+    // TODO: CHANGE ALL STRINGS TO ONE MAP CAUSE OF DB STRUCTURE!
     public Post() {
     }
 
-    public Post(String text, String newsImageUrl, String authorImageUrl, String category,
+    public Post(String text, String postImageUrl, String authorImageUrl, String category,
                 String title, String author) {
         this.text = text;
-        this.newsImageUrl = newsImageUrl;
+        this.postImageUrl = postImageUrl;
         this.authorImageUrl = authorImageUrl;
         this.category = category;
         this.title = title;
@@ -42,11 +42,11 @@ public class Post {
     }
 
     public String getPostImageUrl() {
-        return newsImageUrl;
+        return postImageUrl;
     }
 
     public void setPostImageUrl(String newsImageUrl) {
-        this.newsImageUrl = newsImageUrl;
+        this.postImageUrl = newsImageUrl;
     }
 
     public String getAuthorImageUrl() {

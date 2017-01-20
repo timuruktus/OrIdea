@@ -16,14 +16,16 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
-import ru.timuruktus.oridea.Events.Global.ReturnCategoriesEvent;
+import ru.timuruktus.oridea.Events.EventCallbacks.ReturnCategoriesEvent;
 import ru.timuruktus.oridea.Events.Global.ShowErrorEvent;
+import ru.timuruktus.oridea.Events.ToMainActivity.ChangeFragmentEvent;
 import ru.timuruktus.oridea.Events.ToPushPostPresenter.OnChooseCategoryEvent;
-import ru.timuruktus.oridea.Events.ToPushPostPresenter.OnPostImageLoadedEvent;
+import ru.timuruktus.oridea.Events.EventCallbacks.OnPostImageLoadedCallback;
 import ru.timuruktus.oridea.Events.ToPushPostPresenter.OnPushButtonClickEvent;
 import ru.timuruktus.oridea.Events.ToUploadFiles.UploadPostImageEvent;
 import ru.timuruktus.oridea.Model.JSONFragments.Post;
 import ru.timuruktus.oridea.Model.JSONFragments.UserAccount;
+import ru.timuruktus.oridea.View.Fragments.WelcomeFragment;
 
 public class PushPostPresenter {
 
@@ -49,15 +51,17 @@ public class PushPostPresenter {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
                     categories.add(postSnapshot.getValue().toString());
-                    System.out.println(postSnapshot.getValue().toString());
                 }
                 EventBus.getDefault().post(new ReturnCategoriesEvent(categories));
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                return;
             }
+
         });
+
     }
 
     @Subscribe
@@ -66,21 +70,58 @@ public class PushPostPresenter {
             EventBus.getDefault().post(new ShowErrorEvent());
             return;
         }
+        if(FirebaseAuth.getInstance().getCurrentUser().isEmailVerified() == false){
+            EventBus.getDefault().post(new ShowErrorEvent(ShowErrorEvent.Action.DIDNT_VERIFY_EMAIL));
+            return;
+        }
+        this.text = event.editText;
+        this.title = event.editTitle;
+        this.category = event.category;
         if(event.urlToImage == null){
             EventBus.getDefault().post(new UploadPostImageEvent(event.localImg));
         }else{
             this.urlToImage = event.urlToImage;
-            this.text = event.editText;
-            this.title = event.editTitle;
-            this.category = event.category;
-            loadPostToDB();
+            preparePostToDB();
         }
+    }
+
+    private void preparePostToDB(){
+            getAuthorLogin();
+    }
+
+    private void getAuthorLogin() throws NullPointerException{
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserAccount userAccount = dataSnapshot.getValue(UserAccount.class);
+                if(userAccount == null) Log.d(TAG, "User account is empty");
+                if(userAccount.getUsername() == null){
+                    PushPostPresenter.this.username = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+                }else{
+                    PushPostPresenter.this.username = userAccount.getUsername();
+                }
+
+                loadPostToDB();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+            }
+        };
+        mDatabase.addListenerForSingleValueEvent(postListener);
+    }
+
+    @Subscribe
+    public void onPostImageLoaded(OnPostImageLoadedCallback event){
+        this.urlToImage = event.imgUrl;
+        preparePostToDB();
     }
 
     private void loadPostToDB(){
         try {
             Post post;
-            getAuthorLogin();
             if(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl() == null){
                 // TODO: THIS IS PLACEHOLDER. NEEDED TO BE CHANGED
                 String defaultIMGUrl = "http://img.freeflagicons.com/thumb/square_icon/russia/russia_640.png";
@@ -103,42 +144,13 @@ public class PushPostPresenter {
             mDatabase.child("UsersPosts").child(postID).setValue(post);
             mDatabase.child("Users").
                     child(FirebaseAuth.getInstance().getCurrentUser().getUid()).
-                    child("Posts").
-                    setValue(post);
-            EventBus.getDefault().unregister(this);
+                    child("Posts").push().
+                    setValue(postID);
+            EventBus.getDefault().post(new ChangeFragmentEvent(new WelcomeFragment(), false));
         }catch (NullPointerException ex){
             ex.printStackTrace();
             EventBus.getDefault().post(new ShowErrorEvent());
         }
-
     }
 
-    private void getAuthorLogin() throws NullPointerException{
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        ValueEventListener postListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                UserAccount userAccount = dataSnapshot.getValue(UserAccount.class);
-                if(userAccount.getUsername() == null){
-                    PushPostPresenter.this.username = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-                }else{
-                    PushPostPresenter.this.username = userAccount.getUsername();
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-            }
-        };
-        mDatabase.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addListenerForSingleValueEvent(postListener);
-    }
-
-    @Subscribe
-    public void onPostImageLoaded(OnPostImageLoadedEvent event){
-        this.urlToImage = event.imgUrl;
-        loadPostToDB();
-    }
 }
